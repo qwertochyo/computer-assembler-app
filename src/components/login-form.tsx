@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,11 +16,18 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { useActionState } from "react";
+import { LoginState, loginAction } from "@/app/login/actions";
 
 export const LoginForm = ({
   className,
   ...props
 }: React.ComponentProps<"div">) => {
+  const [state, formAction] = useActionState<LoginState | null, FormData>(
+    loginAction,
+    null
+  );
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -29,13 +38,14 @@ export const LoginForm = ({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form action={formAction}>
             <FieldGroup>
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input
                   id="email"
                   type="email"
+                  name="email"
                   placeholder="m@example.com"
                   required
                 />
@@ -50,8 +60,9 @@ export const LoginForm = ({
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password" type="password" required />
+                <Input id="password" name="password" type="password" required />
               </Field>
+              {state?.error && <p className="text-red-600">{state?.error}</p>}
               <Field>
                 <Button type="submit">Login</Button>
                 <FieldDescription className="text-center">

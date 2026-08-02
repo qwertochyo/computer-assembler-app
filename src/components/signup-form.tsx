@@ -52,9 +52,7 @@ export const SignupForm = ({ ...props }: React.ComponentProps<typeof Card>) => {
               <FieldDescription>
                 Must be at least 8 characters long.
               </FieldDescription>
-              {state?.error && (
-                <p>{state?.error}</p>
-              )}
+              {state?.error && <p className="text-red-600">{state?.error}</p>}
             </Field>
             <FieldGroup>
               <Field>
