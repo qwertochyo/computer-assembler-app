@@ -1,5 +1,5 @@
-const Dashboard = async () => {
+const DashboardPage = async () => {
   return <div>Dashboard</div>;
 };
 
-export default Dashboard;
+export default DashboardPage;
