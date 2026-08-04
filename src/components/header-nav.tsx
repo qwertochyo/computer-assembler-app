@@ -28,24 +28,24 @@ export const HeaderNav = ({ session }: HeaderNavProps) => {
   }
 
   return (
-    <div className="grid grid-cols-3 items-center gap-4">
-      <div />
+    <div className="grid grid-cols-1 sm:grid-cols-3 items-center gap-4">
+      <div className="hidden sm:block" />
       <div className="flex justify-center">
-        <Tabs value={tabValue} className="w-fit">
-          <TabsList>
-            <TabsTrigger value="dashboard" asChild>
+        <Tabs value={tabValue}>
+          <TabsList className="flex flex-col md:flex-row">
+            <TabsTrigger value="dashboard" className="w-full md:w-auto" asChild>
               <Link href="/dashboard">
                 <Plus className="size-4" />
                 Create build
               </Link>
             </TabsTrigger>
-            <TabsTrigger value="builds" asChild>
+            <TabsTrigger value="builds" className="w-full md:w-auto" asChild>
               <Link href="/builds">
                 <LayoutList className="size-4" />
                 My builds
               </Link>
             </TabsTrigger>
-            <TabsTrigger value="explore" asChild>
+            <TabsTrigger value="explore" className="w-full md:w-auto" asChild>
               <Link href="/builds/explore">
                 <Users className="size-4" />
                 Public builds
@@ -54,7 +54,7 @@ export const HeaderNav = ({ session }: HeaderNavProps) => {
           </TabsList>
         </Tabs>
       </div>
-      <div className="flex justify-end">
+      <div className="flex justify-center sm:justify-end">
         <Button
           variant="ghost"
           size="sm"
