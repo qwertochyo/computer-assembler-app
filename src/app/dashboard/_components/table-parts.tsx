@@ -21,6 +21,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useState } from "react";
+import { AddComponentDialog } from "./add-component-dialog";
 
 const iconMap: Record<ComponentCategory["icon"], React.ElementType> = {
   Cpu,
@@ -54,6 +55,7 @@ export const TableParts = ({
   onSelectedComponent,
 }: TablePartsProps) => {
   const [openCategoryId, setOpenCategoryId] = useState<string | null>(null);
+
   const totalPrice = Object.values(selectedByCategory).reduce(
     (sum, c) => sum + (c?.price ?? 0),
     0
@@ -94,11 +96,19 @@ export const TableParts = ({
                   }
                 >
                   <DialogTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <Plus className="size-4 mr-1" />
-                    {selected ? "Change" : "Add"}
-                  </Button>
-                </DialogTrigger>
+                    <Button variant="outline" size="sm">
+                      <Plus className="size-4 mr-1" />
+                      {selected ? "Change" : "Add"}
+                    </Button>
+                  </DialogTrigger>
+                  <AddComponentDialog
+                    categoryId={category.id}
+                    categoryName={category.name}
+                    onSelect={(c) => {
+                      onSelectedComponent(category.id, c);
+                      setOpenCategoryId(null);
+                    }}
+                  />
                 </Dialog>
               </TableCell>
             </TableRow>
