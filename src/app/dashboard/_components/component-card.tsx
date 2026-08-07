@@ -7,7 +7,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { formatPrice } from "@/lib/utils";
-import { Plus } from "lucide-react";
 
 interface ComponentCardProps {
   name: string;
@@ -27,8 +26,7 @@ export const ComponentCard = ({ name, price, onClick }: ComponentCardProps) => {
         </CardDescription>
       </CardHeader>
       <CardFooter className="pt-0">
-        <Button onClick={onClick}>
-          <Plus className="size-3.5" />
+        <Button variant="secondary" size="sm" className="w-full gap-1.5 mt-2" onClick={onClick}>
           Add
         </Button>
       </CardFooter>

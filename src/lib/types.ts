@@ -8,7 +8,7 @@ export interface Component {
   id: string;
   name: string;
   price: number;
-  type: ComponentCategory;
+  type: ComponentType;
   socket: string | null;
 }
 
