@@ -51,7 +51,7 @@ export const AddComponentDialog = ({
           </div>
         ) : (
           <Typography tag="p" className="text-muted-foreground text-sm py-4">
-            {loading ? "Загрузка" : "Нет доступных компонентов"}
+            {loading ? "Loading" : "There are no available components"}
           </Typography>
         )}
       </div>

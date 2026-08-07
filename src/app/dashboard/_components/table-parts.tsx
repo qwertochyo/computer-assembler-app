@@ -4,6 +4,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -22,6 +23,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { AddComponentDialog } from "./add-component-dialog";
+import { formatPrice } from "@/lib/utils";
 
 const iconMap: Record<ComponentCategory["icon"], React.ElementType> = {
   Cpu,
@@ -115,6 +117,16 @@ export const TableParts = ({
           );
         })}
       </TableBody>
+      <TableFooter>
+        <TableRow>
+          <TableCell colSpan={5}>
+            <p className="font-medium">Build price:</p>
+            <p className="font-large text-gray-500">
+              {formatPrice(totalPrice)}
+            </p>
+          </TableCell>
+        </TableRow>
+      </TableFooter>
     </Table>
   );
 };
