@@ -3,6 +3,10 @@ import { auth } from "@/lib/auth";
 import { getMyBuilds } from "@/lib/builds";
 import { redirect } from "next/navigation";
 import { BuildCard } from "./components/build-card";
+import { DeleteBuildButton } from "./components/delete-build-button";
+import { deleteBuildAction, setBuildPublicAction } from "./actions";
+import { Button } from "@/components/ui/button";
+import { Share2 } from "lucide-react";
 
 const BuildsPage = async () => {
   const session = await auth();
@@ -22,7 +26,25 @@ const BuildsPage = async () => {
         <div className="grid gap-5 lg:grid-cols-3">
           {builds.map((build) => (
             <BuildCard key={build.id} build={build}>
-              ...
+              <DeleteBuildButton
+                buildId={build.id}
+                deleteAction={deleteBuildAction}
+              />
+              <form action={setBuildPublicAction} className="contents">
+                <input type="hidden" name="buildId" value={build.id} />
+                <input
+                  type="hidden"
+                  name="isPublic"
+                  value={build.isPublic ? "false" : "true"}
+                />
+                <Button type="submit" variant={`${build.isPublic ? "default" : "ghost"}`}>
+                  <Share2
+                    className={`size-4 mr-1 ${
+                      build.isPublic ? "fill-background" : ""
+                    }`}
+                  />
+                </Button>
+              </form>
             </BuildCard>
           ))}
         </div>

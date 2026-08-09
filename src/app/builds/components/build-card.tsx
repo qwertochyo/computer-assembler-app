@@ -61,7 +61,7 @@ export const BuildCard = ({ build, children }: BuildCardProps) => {
         )}
       </CardContent>
       <CardFooter className="flex flex-row justify-between gap-2 pt-4 border-t">
-        <CardDescription className="text-sm font-medium tabular-nums flex flex-col justify-between">
+        <CardDescription className="text-sm font-medium tabular-nums flex flex-col gap-2 justify-between">
           <span className="text-sky-500 text-lg font-bold">
             {formatPrice(build.totalPrice)}
           </span>
