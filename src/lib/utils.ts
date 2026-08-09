@@ -25,7 +25,10 @@ export const getTabValue = (pathname: string) => {
 };
 
 export const formatPrice = (price: number) =>
-  new Intl.NumberFormat('ru-RU', { 
-    style: 'currency', 
-    currency: 'RUB' 
-  }).format(price)
+  new Intl.NumberFormat("ru-RU", {
+    style: "currency",
+    currency: "RUB",
+  }).format(price);
+
+export const formatDate = (date: Date) =>
+  new Intl.DateTimeFormat("ru-RU").format(date);

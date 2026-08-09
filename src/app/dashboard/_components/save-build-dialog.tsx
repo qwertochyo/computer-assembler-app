@@ -21,8 +21,8 @@ interface SaveBuildDialog {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   selectedByCategory: Record<string, Component | null>;
-  defaultName: string;
-  redirectPath: string;
+  defaultName?: string;
+  redirectPath?: string;
 }
 
 const initialState: SaveBuildFormState = {
