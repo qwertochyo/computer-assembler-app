@@ -24,7 +24,7 @@ export const CurrentBuild = () => {
   return (
     <>
       <div className="flex justify-between mb-8">
-        <Typography tag="h1" variant="heading-md">
+        <Typography tag="h1" variant="title-md">
           Create your own build
         </Typography>
         <Button onClick={() => setSaveDialogOpen(true)}>Build</Button>
