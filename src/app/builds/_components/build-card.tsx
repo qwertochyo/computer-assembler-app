@@ -42,7 +42,7 @@ export const BuildCard = ({ build, children }: BuildCardProps) => {
         </div>
         <div className="shrink-0">
           <Button>
-            <Link href={`/builds/${build.id}`}>
+            <Link href={`/builds/${build.id}/edit`}>
               <Pencil className="size-4" />
             </Link>
           </Button>
