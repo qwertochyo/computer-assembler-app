@@ -37,7 +37,10 @@ const BuildsPage = async () => {
                   name="isPublic"
                   value={build.isPublic ? "false" : "true"}
                 />
-                <Button type="submit" variant={`${build.isPublic ? "default" : "ghost"}`}>
+                <Button
+                  type="submit"
+                  variant={`${build.isPublic ? "default" : "ghost"}`}
+                >
                   <Share2
                     className={`size-4 mr-1 ${
                       build.isPublic ? "fill-background" : ""

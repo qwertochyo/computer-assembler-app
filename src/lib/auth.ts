@@ -17,30 +17,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         },
       },
       async authorize(credentials) {
-        if (!credentials?.email || typeof credentials.email !== "string") {
-          return null;
-        }
-
         if (
-          !credentials?.password ||
-          typeof credentials.password !== "string"
+          typeof credentials?.email !== "string" ||
+          typeof credentials?.password !== "string"
         ) {
           return null;
         }
 
+        const email = credentials.email.trim().toLowerCase();
+
         const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.email,
-          },
+          where: { email },
         });
 
         if (!user?.password) {
           return null;
         }
 
-        const valid = await bcrypt.compare(credentials.password, user.password);
+        const isValidPassword = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
 
-        if (!valid) {
+        if (!isValidPassword) {
           return null;
         }
 
@@ -60,17 +59,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.email = user.email;
-        token.name = user.name;
       }
 
       return token;
     },
     session({ session, token }) {
-      if (session.user) {
+      if (session.user && token.id) {
         session.user.id = token.id;
-        session.user.email = token.email;
-        session.user.name = token.name;
       }
       return session;
     },

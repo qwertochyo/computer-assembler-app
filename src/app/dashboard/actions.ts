@@ -4,40 +4,54 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { Component, categoryIdToDbType } from "@/lib/types";
 import { revalidatePath } from "next/cache";
+import { SaveBuildInput, saveBuildSchema } from "./schema";
 
 export interface SaveBuildFormState {
   status: "idle" | "success" | "error";
   message?: string;
+  buildId?: string;
 }
 
 export const saveBuildAction = async (
   _prevState: SaveBuildFormState,
   formData: FormData
 ): Promise<SaveBuildFormState> => {
-  const name = String(formData.get("name") ?? "").trim();
-  const componentsIds = String(formData.get("componentsIds") ?? "")
+  const componentIds = formData
+    .get("componentIds")
+    ?.toString()
     .split(",")
-    .map((id) => id.trim())
     .filter(Boolean);
 
-  const result = await saveBuild(name, componentsIds);
+  const result = saveBuildSchema.safeParse({
+    name: formData.get("name"),
+    componentIds,
+  });
 
   if (!result.success) {
     return {
       status: "error",
-      message: result.error,
+      message: result.error.issues[0]?.message ?? "Invalid form data",
+    };
+  }
+
+  const saveResult = await saveBuild(result.data);
+
+  if (!saveResult.success) {
+    return {
+      status: "error",
+      message: saveResult.error,
     };
   }
 
   return {
     status: "success",
-    message: "The build has been successfully saved"
-  }
+    message: "The build has been successfully saved",
+    buildId: saveResult.buildId,
+  };
 };
 
-export const saveBuild = async (
-  name: string,
-  componentIds: string[]
+const saveBuild = async (
+  data: SaveBuildInput
 ): Promise<
   { success: true; buildId: string } | { success: false; error: string }
 > => {
@@ -47,26 +61,16 @@ export const saveBuild = async (
     return { success: false, error: "Need to login" };
   }
 
-  const trimmedName = name.trim();
-
-  if (!trimmedName) {
-    return { success: false, error: "Enter the build name" };
-  }
-
-  if (componentIds.length === 0) {
-    return { success: false, error: "Add at least one component" };
-  }
-
   const components = await prisma.component.findMany({
-    where: { id: { in: componentIds } },
+    where: { id: { in: data.componentIds } },
   });
 
-  if (components.length !== componentIds.length) {
+  if (components.length !== data.componentIds.length) {
     return { success: false, error: "Some components have not been found" };
   }
 
   const totalPrice = components.reduce(
-    (sum, component) => (sum += component.price),
+    (sum, component) => sum + component.price,
     0
   );
 
@@ -74,14 +78,14 @@ export const saveBuild = async (
     const build = await prisma.$transaction(async (tx) => {
       const newBuild = await tx.build.create({
         data: {
-          name: trimmedName,
+          name: data.name,
           totalPrice,
           userId: session.user.id,
         },
       });
 
       await tx.buildComponent.createMany({
-        data: componentIds.map((componentId) => ({
+        data: data.componentIds.map((componentId) => ({
           buildId: newBuild.id,
           componentId,
         })),
@@ -97,27 +101,4 @@ export const saveBuild = async (
   } catch (error) {
     return { success: false, error: "The build could not be saved" };
   }
-};
-
-export const getComponentsByCategory = async (
-  categoryId: string
-): Promise<Component[]> => {
-  const dbType = categoryIdToDbType[categoryId];
-
-  if (!dbType) {
-    return [];
-  }
-
-  const components = await prisma.component.findMany({
-    where: { type: dbType },
-    orderBy: { price: "asc" },
-  });
-
-  return components.map((component) => ({
-    id: component.id,
-    name: component.name,
-    price: component.price,
-    type: component.type,
-    socket: component.socket,
-  }));
 };

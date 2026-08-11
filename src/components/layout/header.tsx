@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import Link from "next/link";
-import { Typography } from "./ui/typography";
+import { Typography } from "../ui/typography";
 import { HeaderNav } from "./header-nav";
 
 export const Header = async () => {

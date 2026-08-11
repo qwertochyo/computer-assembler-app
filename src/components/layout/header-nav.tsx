@@ -3,9 +3,9 @@
 import { getTabValue } from "@/lib/utils";
 import { Session } from "next-auth";
 import { usePathname } from "next/navigation";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import Link from "next/link";
-import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import { LayoutList, Plus, Users } from "lucide-react";
 import { signOut } from "next-auth/react";
 

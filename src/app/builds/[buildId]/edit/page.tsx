@@ -1,7 +1,6 @@
 import { auth } from "@/lib/auth";
 import { getBuildToEdit } from "@/lib/builds";
-import { prisma } from "@/lib/db";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { EditBuildForm } from "./_components/edit-build-form";
 
 interface EditBuildProps {
@@ -17,10 +16,10 @@ const EditBuildPage = async ({ params }: EditBuildProps) => {
 
   const { buildId } = await params;
 
-  const build = await getBuildToEdit(buildId);
+  const build = await getBuildToEdit(buildId, session.user.id);
 
   if (!build) {
-    return;
+    notFound();
   }
 
   const buildComponents = build.components.map((buildComponent) => ({

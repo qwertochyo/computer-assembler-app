@@ -1,6 +1,6 @@
 "use client";
 
-import { SignupState, signupAction } from "@/app/signup/actions";
+import { signupAction } from "@/app/signup/actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -10,13 +10,11 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
 import { useActionState } from "react";
 
 export const SignupForm = ({ ...props }: React.ComponentProps<typeof Card>) => {
-  const [state, formAction] = useActionState<SignupState | null, FormData>(
-    signupAction,
-    null
-  );
+  const [state, formAction, isPending] = useActionState(signupAction, null);
 
   return (
     <Card {...props}>
@@ -56,9 +54,15 @@ export const SignupForm = ({ ...props }: React.ComponentProps<typeof Card>) => {
             </Field>
             <FieldGroup>
               <Field>
-                <Button type="submit">Create Account</Button>
+                <Button type="submit" disabled={isPending}>
+                  {isPending ? "Creating account..." : "Create account"}
+                </Button>
+
                 <FieldDescription className="px-6 text-center">
-                  Already have an account? <a href="/login">Sign in</a>
+                  Already have an account?{" "}
+                  <Link href="/login" className="underline">
+                    Sign in
+                  </Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>
