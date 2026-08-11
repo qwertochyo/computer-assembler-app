@@ -15,6 +15,7 @@ import {
   Cpu,
   Fan,
   HardDrive,
+  LucideIcon,
   MemoryStick,
   Monitor,
   Plus,
@@ -22,10 +23,10 @@ import {
   Zap,
 } from "lucide-react";
 import { useState } from "react";
-import { AddComponentDialog } from "./add-component-dialog";
 import { formatPrice } from "@/lib/utils";
+import { AddComponentDialog } from "@/components/build/add-component-dialog";
 
-const iconMap: Record<ComponentCategory["icon"], React.ElementType> = {
+const iconMap: Record<ComponentCategory["icon"], LucideIcon> = {
   Cpu,
   Monitor,
   Server,
@@ -36,25 +37,16 @@ const iconMap: Record<ComponentCategory["icon"], React.ElementType> = {
   Fan,
 };
 
-interface CategoryRow {
-  id: string;
-  name: string;
-  icon: string;
-}
-
 interface TablePartsProps {
-  components: CategoryRow[];
+  components: ComponentCategory[];
   selectedByCategory: Record<string, Component | null>;
-  onSelectedComponent: (
-    categoryId: string,
-    component: Component | null
-  ) => void;
+  onComponentSelect: (categoryId: string, component: Component | null) => void;
 }
 
 export const TableParts = ({
   components,
   selectedByCategory,
-  onSelectedComponent,
+  onComponentSelect,
 }: TablePartsProps) => {
   const [openCategoryId, setOpenCategoryId] = useState<string | null>(null);
 
@@ -83,13 +75,15 @@ export const TableParts = ({
           return (
             <TableRow key={category.id} className="my-2">
               <TableCell>
-                <div className="flex ietms-center">
+                <div className="flex items-center">
                   <Icon className="size-5 mr-1" />
                 </div>
               </TableCell>
               <TableCell className="font-bold">{category.name}</TableCell>
               <TableCell>{selected?.name ?? "-"}</TableCell>
-              <TableCell>{selected?.price ?? "-"}</TableCell>
+              <TableCell>
+                {selected ? formatPrice(selected.price) : "-"}
+              </TableCell>
               <TableCell className="text-right">
                 <Dialog
                   open={openCategoryId === category.id}
@@ -107,7 +101,7 @@ export const TableParts = ({
                     categoryId={category.id}
                     categoryName={category.name}
                     onSelect={(c) => {
-                      onSelectedComponent(category.id, c);
+                      onComponentSelect(category.id, c);
                       setOpenCategoryId(null);
                     }}
                   />
@@ -121,9 +115,7 @@ export const TableParts = ({
         <TableRow>
           <TableCell colSpan={5}>
             <p className="font-medium">Build price:</p>
-            <p className="font-large text-gray-500">
-              {formatPrice(totalPrice)}
-            </p>
+            <p className="text-lg text-gray-500">{formatPrice(totalPrice)}</p>
           </TableCell>
         </TableRow>
       </TableFooter>

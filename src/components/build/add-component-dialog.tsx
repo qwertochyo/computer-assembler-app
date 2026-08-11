@@ -8,8 +8,8 @@ import {
 import { Component } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { ComponentCard } from "./component-card";
-import { getComponentsByCategory } from "../actions";
 import { Typography } from "@/components/ui/typography";
+import { getComponentsByCategory } from "../../app/dashboard/queries";
 
 interface AddComponentDialogProps {
   categoryId: string;
@@ -26,10 +26,23 @@ export const AddComponentDialog = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getComponentsByCategory(categoryId).then((data) => {
+    let cancelled = false;
+
+    const loadComponents = async () => {
+      setLoading(true);
+      const data = await getComponentsByCategory(categoryId);
+      if (cancelled) {
+        return;
+      }
       setComponents(data);
       setLoading(false);
-    });
+    };
+
+    loadComponents();
+
+    return () => {
+      cancelled = true;
+    };
   }, [categoryId]);
 
   return (

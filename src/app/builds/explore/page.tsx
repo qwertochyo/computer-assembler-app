@@ -1,20 +1,20 @@
 import { Typography } from "@/components/ui/typography";
 import { auth } from "@/lib/auth";
-import { getPublicBuild } from "@/lib/builds";
-import { notFound } from "next/navigation";
+import { getPublicBuilds } from "@/lib/builds";
 import { BuildCard } from "../_components/build-card";
 import { toggleLikeAction } from "../actions";
 import { Button } from "@/components/ui/button";
 import { ThumbsUp } from "lucide-react";
+import { redirect } from "next/navigation";
 
 const ExplorePage = async () => {
   const session = await auth();
 
   if (!session?.user.id) {
-    notFound();
+    redirect("/login");
   }
 
-  const builds = await getPublicBuild(session.user.id);
+  const builds = await getPublicBuilds(session.user.id);
 
   return (
     <div className="py-6">

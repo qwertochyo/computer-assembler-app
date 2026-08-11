@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getPopularBuild } from "@/lib/builds";
+import { getPopularBuilds } from "@/lib/builds";
 import { formatPrice } from "@/lib/utils";
 import { Eye, ThumbsUp } from "lucide-react";
 import Link from "next/link";
 
 export const PopularBuildCard = async () => {
-  const builds = await getPopularBuild();
+  const builds = await getPopularBuilds();
 
   if (builds.length === 0) {
     return (

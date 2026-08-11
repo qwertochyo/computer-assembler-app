@@ -1,9 +1,8 @@
 "use client";
 
 import { Component } from "@/lib/types";
-import { SaveBuildFormState, saveBuildAction } from "../actions";
 import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useMemo, useRef } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useFormStatus } from "react-dom";
 import { toast } from "sonner";
+import { SaveBuildFormState, saveBuildAction } from "@/app/dashboard/actions";
 
 interface SaveBuildDialog {
   open: boolean;
@@ -29,6 +29,16 @@ const initialState: SaveBuildFormState = {
   status: "idle",
 };
 
+const SubmitButton = ({ disabled }: { disabled: boolean }) => {
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" disabled={pending || disabled}>
+      {" "}
+      {pending ? "Saving" : "Save"}{" "}
+    </Button>
+  );
+};
+
 export const SaveBuildDialog = ({
   open,
   onOpenChange,
@@ -38,30 +48,31 @@ export const SaveBuildDialog = ({
 }: SaveBuildDialog) => {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
-  const { pending } = useFormStatus();
+
   const [state, formAction] = useActionState(saveBuildAction, initialState);
 
-  const componentsIds = useMemo(
-    () =>
-      Object.values(selectedByCategory)
-        .filter((component): component is Component => component !== null)
-        .map((component) => component.id),
-    [selectedByCategory]
-  );
+  const componentIds = Object.values(selectedByCategory)
+    .filter((component): component is Component => component !== null)
+    .map((component) => component.id);
 
   useEffect(() => {
     if (state.status === "success") {
-      toast.success("Build has been saved");
-      formRef.current?.reset();
+      toast.success(state.message ?? "Build has been saved");
 
+      formRef.current?.reset();
       onOpenChange(false);
+
       if (redirectPath) {
         router.push(redirectPath);
       } else {
         router.refresh();
       }
     }
-  }, [onOpenChange, redirectPath, router, state.status]);
+
+    if (state.status === "error") {
+      toast.error(state.message ?? "Failed to save build");
+    }
+  }, [onOpenChange, redirectPath, router, state]);
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
@@ -87,13 +98,11 @@ export const SaveBuildDialog = ({
           />
           <input
             type="hidden"
-            name="componentsIds"
-            value={componentsIds.join(",")}
+            name="componentIds"
+            value={componentIds.join(",")}
           />
           <DialogFooter>
-            <Button type="submit" disabled={pending || componentsIds.length === 0}>
-              {pending ? "Saving" : "Save"}
-            </Button>
+            <SubmitButton disabled={componentIds.length === 0} />
           </DialogFooter>
         </form>
       </DialogContent>

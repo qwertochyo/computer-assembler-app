@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -11,8 +10,9 @@ import { Typography } from "@/components/ui/typography";
 import { formatDate, formatPrice } from "@/lib/utils";
 import { Pencil } from "lucide-react";
 import Link from "next/link";
+import type { ReactNode } from "react";
 
-interface BuildCard {
+interface BuildCardData {
   user: { email: string };
   id: string;
   name: string;
@@ -22,8 +22,8 @@ interface BuildCard {
 }
 
 interface BuildCardProps {
-  build: BuildCard;
-  children: React.ReactNode;
+  build: BuildCardData;
+  children: ReactNode;
 }
 
 export const BuildCard = ({ build, children }: BuildCardProps) => {
@@ -41,14 +41,14 @@ export const BuildCard = ({ build, children }: BuildCardProps) => {
           </p>
         </div>
         <div className="shrink-0">
-          <Button>
+          <Button asChild>
             <Link href={`/builds/${build.id}/edit`}>
               <Pencil className="size-4" />
             </Link>
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="flex-1 pt-0 space-y-1 gap-2">
+      <CardContent className="flex-1 pt-0 space-y-1">
         {build.components.length > 0 && (
           <div>
             <p className="text-sm font-medium mt-2">Components:</p>
@@ -61,7 +61,7 @@ export const BuildCard = ({ build, children }: BuildCardProps) => {
         )}
       </CardContent>
       <CardFooter className="flex flex-row justify-between gap-2 pt-4 border-t">
-        <CardDescription className="text-sm font-medium tabular-nums flex flex-col gap-2 justify-between">
+        <div className="text-sm font-medium tabular-nums flex flex-col gap-2 justify-between">
           <span className="text-sky-500 text-lg font-bold">
             {formatPrice(build.totalPrice)}
           </span>
@@ -71,7 +71,7 @@ export const BuildCard = ({ build, children }: BuildCardProps) => {
             </p>
           )}
           <div className="flex flex-row gap-2">{children}</div>
-        </CardDescription>
+        </div>
       </CardFooter>
     </Card>
   );

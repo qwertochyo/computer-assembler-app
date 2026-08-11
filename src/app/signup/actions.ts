@@ -1,11 +1,12 @@
 "use server";
 
-import { redirect } from "next/navigation";
-import { prisma } from "@/lib/db";
 import bcrypt from "bcryptjs";
+import { redirect } from "next/navigation";
 
-const MIN_PASSWORD_LENGTH = 8;
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+import { prisma } from "@/lib/db";
+import { signupSchema } from "./schema";
+
+const PASSWORD_SALT_ROUNDS = 10;
 
 export type SignupState = { error?: string };
 
@@ -13,21 +14,19 @@ export const signupAction = async (
   _prevState: SignupState | null,
   formData: FormData
 ): Promise<SignupState> => {
-  const name = formData.get("name") as string | undefined;
-  const email = formData.get("email") as string | undefined;
-  const password = formData.get("password") as string | undefined;
+  const result = signupSchema.safeParse({
+    name: formData.get("name"),
+    email: formData.get("email"),
+    password: formData.get("password"),
+  });
 
-  if (!email) {
-    return { error: "Enter email" };
+  if (!result.success) {
+    return {
+      error: result.error.issues[0].message,
+    };
   }
 
-  if (!EMAIL_REGEX.test(email)) {
-    return { error: "Invalid email format" };
-  }
-
-  if (!password || password.length < MIN_PASSWORD_LENGTH) {
-    return { error: "Password must be at least 8 characters" };
-  }
+  const { name, email, password } = result.data;
 
   const existing = await prisma.user.findUnique({
     where: { email },
@@ -37,7 +36,7 @@ export const signupAction = async (
     return { error: "Email is already exist" };
   }
 
-  const hasedPassword = await bcrypt.hash(password, 10);
+  const hasedPassword = await bcrypt.hash(password, PASSWORD_SALT_ROUNDS);
 
   await prisma.user.create({
     data: {

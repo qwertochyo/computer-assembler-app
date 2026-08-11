@@ -5,10 +5,13 @@ import { useTransition } from "react";
 
 interface DeleteBuildButtonProps {
   buildId: string;
-  deleteAction: (formData: FormData) => void;
+  deleteAction: (formData: FormData) => Promise<void>;
 }
 
-export const DeleteBuildButton = ({ buildId, deleteAction }: DeleteBuildButtonProps) => {
+export const DeleteBuildButton = ({
+  buildId,
+  deleteAction,
+}: DeleteBuildButtonProps) => {
   const [isPending, startTransition] = useTransition();
 
   const handleClick = () => {
@@ -16,10 +19,10 @@ export const DeleteBuildButton = ({ buildId, deleteAction }: DeleteBuildButtonPr
       return;
     }
 
-    const fd = new FormData();
-    fd.set("buildId", buildId);
+    const formData = new FormData();
+    formData.set("buildId", buildId);
 
-    startTransition(() => deleteAction(fd));
+    startTransition(() => deleteAction(formData));
   };
 
   return (
@@ -30,7 +33,7 @@ export const DeleteBuildButton = ({ buildId, deleteAction }: DeleteBuildButtonPr
       disabled={isPending}
       onClick={handleClick}
     >
-      Delete
+      {isPending ? "Deleting..." : "Delete"}
     </Button>
   );
 };

@@ -1,12 +1,12 @@
 "use client";
 
-import { SaveBuildDialog } from "@/app/dashboard/_components/save-build-dialog";
-import { TableParts } from "@/app/dashboard/_components/table-parts";
+import { SaveBuildDialog } from "@/components/build/save-build-dialog";
+import { TableParts } from "@/components/build/table-parts";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
 import { componentCategories } from "@/lib/constants";
 import { Component, ComponentType, dbTypeToCategoryId } from "@/lib/types";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 interface BuildComponentInput {
   id: string;
@@ -47,23 +47,18 @@ export const EditBuildForm = ({
   buildName,
   buildComponents,
 }: EditBuildFormProps) => {
-  const initialSelected = useMemo(() => {
-    return buildInitialSelected(buildComponents);
-  }, [buildComponents]);
+  const initialSelected = buildInitialSelected(buildComponents);
 
   const [selectedByCategory, setSelectedByCategory] =
     useState<Record<string, Component | null>>(initialSelected);
-  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
 
-  const onSelectedComponent = useCallback(
-    (categoryId: string, component: Component | null) => {
-      setSelectedByCategory((prev) => ({
-        ...prev,
-        [categoryId]: component,
-      }));
-    },
-    []
-  );
+  const handleComponentSelect = (
+    categoryId: string,
+    component: Component | null
+  ) => {
+    setSelectedByCategory((prev) => ({ ...prev, [categoryId]: component }));
+  };
 
   return (
     <>
@@ -71,17 +66,17 @@ export const EditBuildForm = ({
         <Typography tag="h3" variant="title-md">
           Editing build – {buildName}
         </Typography>
-        <Button onClick={() => setSaveDialogOpen(true)}>Save</Button>
+        <Button onClick={() => setIsSaveDialogOpen(true)}>Save</Button>
       </div>
       <div className="flex justify-center">
         <TableParts
           components={componentCategories}
           selectedByCategory={selectedByCategory}
-          onSelectedComponent={onSelectedComponent}
+          onComponentSelect={handleComponentSelect}
         />
         <SaveBuildDialog
-          open={saveDialogOpen}
-          onOpenChange={setSaveDialogOpen}
+          open={isSaveDialogOpen}
+          onOpenChange={setIsSaveDialogOpen}
           selectedByCategory={selectedByCategory}
           defaultName={buildName}
           redirectPath="/builds"

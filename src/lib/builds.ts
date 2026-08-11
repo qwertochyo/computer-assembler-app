@@ -17,7 +17,7 @@ export const getMyBuilds = async (userId: string) => {
   });
 };
 
-export const getPublicBuild = async (userId: string) => {
+export const getPublicBuilds = async (userId: string) => {
   return prisma.build.findMany({
     where: { isPublic: true },
     orderBy: { createdAt: "desc" },
@@ -36,9 +36,9 @@ export const getPublicBuild = async (userId: string) => {
   });
 };
 
-export const getBuildToEdit = async (buildId: string) => {
+export const getBuildToEdit = async (buildId: string, userId: string) => {
   return await prisma.build.findFirst({
-    where: { id: buildId },
+    where: { id: buildId, userId: userId },
     include: {
       components: {
         include: {
@@ -48,7 +48,7 @@ export const getBuildToEdit = async (buildId: string) => {
     },
   });
 };
-export const getPopularBuild = async (limit = 3) => {
+export const getPopularBuilds = async (limit = 3) => {
   return prisma.build.findMany({
     where: {
       isPublic: true,

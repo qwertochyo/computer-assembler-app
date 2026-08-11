@@ -11,7 +11,7 @@ import { formatPrice } from "@/lib/utils";
 interface ComponentCardProps {
   name: string;
   price: number;
-  onClick?: () => void;
+  onClick: () => void;
 }
 
 export const ComponentCard = ({ name, price, onClick }: ComponentCardProps) => {
@@ -26,7 +26,12 @@ export const ComponentCard = ({ name, price, onClick }: ComponentCardProps) => {
         </CardDescription>
       </CardHeader>
       <CardFooter className="pt-0">
-        <Button variant="secondary" size="sm" className="w-full gap-1.5 mt-2" onClick={onClick}>
+        <Button
+          variant="secondary"
+          size="sm"
+          className="w-full gap-1.5 mt-2"
+          onClick={onClick}
+        >
           Add
         </Button>
       </CardFooter>

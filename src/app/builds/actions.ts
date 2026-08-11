@@ -3,6 +3,7 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { revalidatePath } from "next/cache";
+import { buildIdSchema, setBuildPublicSchema } from "./schema";
 
 export const setBuildPublicAction = async (formData: FormData) => {
   const session = await auth();
@@ -11,12 +12,16 @@ export const setBuildPublicAction = async (formData: FormData) => {
     return;
   }
 
-  const buildId = String(formData.get("buildId")) ?? "";
-  const isPublic = formData.get("isPublic") === "true";
+  const result = setBuildPublicSchema.safeParse({
+    buildId: formData.get("buildId"),
+    isPublic: formData.get("isPublic") === "true",
+  });
 
-  if (!buildId) {
+  if (!result.success) {
     return;
   }
+
+  const { buildId, isPublic } = result.data;
 
   await prisma.build.updateMany({
     where: {
@@ -37,11 +42,15 @@ export const deleteBuildAction = async (formData: FormData) => {
     return;
   }
 
-  const buildId = String(formData.get("buildId")) ?? "";
+  const result = buildIdSchema.safeParse({
+    buildId: formData.get("buildId"),
+  });
 
-  if (!buildId) {
+  if (!result.success) {
     return;
   }
+
+  const { buildId } = result.data;
 
   await prisma.build.deleteMany({
     where: {
@@ -60,11 +69,15 @@ export const toggleLikeAction = async (formData: FormData) => {
     return;
   }
 
-  const buildId = String(formData.get("buildId")) ?? "";
+  const result = buildIdSchema.safeParse({
+    buildId: formData.get("buildId"),
+  });
 
-  if (!buildId) {
+  if (!result.success) {
     return;
   }
+
+  const { buildId } = result.data;
 
   const build = await prisma.build.findUnique({
     where: { id: buildId },
